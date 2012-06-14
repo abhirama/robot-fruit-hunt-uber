@@ -28,6 +28,14 @@ function FruitType(type) {
     this.moves = this.getFruitMoves();
 }
 
+FruitType.sortAsc = function(ary, field) {
+    ary.sort(function(a, b) {
+        return a[field] - b[field];
+    });
+
+    return ary;
+}
+
 function getMove(roboNode, fruitNode) {
     var roboX = roboNode.x, roboY = roboNode.y, fruitX = fruitNode.x, fruitY = fruitNode.y;
     //assumes that the fruit and robo are not on the same square
@@ -110,12 +118,15 @@ function make_move() {
 
     var len = types.length;
     var type;
+    var fruitTypes = [];
     for (var x = 0; x < len; ++x) {
         type = types[x];    
-        console.dir(new FruitType(type));
+        fruitTypes.push(new FruitType(type));
     }
 
-    ksdjfldlk
+    FruitType.sortAsc(fruitTypes, 'totalCount');
+
+    console.dir(fruitTypes);
 
     /*
    var board = get_board();
