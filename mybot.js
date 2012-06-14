@@ -28,7 +28,7 @@ function FruitType(type) {
     this.moves = this.getFruitMoves();
 }
 
-FruitType.sortAsc = function(ary, field) {
+function sortObjectsAsc(ary, field) {
     ary.sort(function(a, b) {
         return a[field] - b[field];
     });
@@ -82,7 +82,7 @@ function getMove(roboNode, fruitNode) {
     }
 
     ////console.log('Distance=' + distance + ', Direction=' + direction);
-    return new Move(fruitNode, distance);
+    return new Move(fruitNode, distance, direction);
 }
 
 function getAllFruitTypes() {
@@ -107,34 +107,56 @@ function Node(x, y) {
     }
 }
 
-function Move(destinationNode, distance) {
+function Move(destinationNode, distance, direction) {
     this.destinationNode = destinationNode;
     this.distance = distance;
+    this.direction = direction;
 }
 
 
 function make_move() {
+    var board = get_board();
+    if (board[get_my_x()][get_my_y()] > 0) {
+        return TAKE;
+    }
+
     var types = getAllFruitTypes();
 
     var len = types.length;
     var type;
     var fruitTypes = [];
+    var fruitType;
     for (var x = 0; x < len; ++x) {
         type = types[x];    
-        fruitTypes.push(new FruitType(type));
+        fruitType = new FruitType(type);
+
+        if (!fruitType.moves.length) {
+            continue;
+        }
+
+        fruitTypes.push(fruitType);
     }
 
-    FruitType.sortAsc(fruitTypes, 'totalCount');
+    sortObjectsAsc(fruitTypes, 'totalCount');
 
-    console.dir(fruitTypes);
+    if (!fruitTypes.length) {
+        return PASS;
+    }
+
+    var moves = fruitTypes[0].moves;
+
+    sortObjectsAsc(moves, 'distance');
+
+    if (!moves.length) {
+        return PASS;
+    }
+
+    return moves[0].direction;
 
     /*
    var board = get_board();
 
    // we found an item! take it!
-   if (board[get_my_x()][get_my_y()] > 0) {
-       return TAKE;
-   }
 
    var rand = Math.random() * 4;
 
@@ -151,6 +173,6 @@ function make_move() {
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
 //
-function default_board_number() {
-    return 287190;
-}
+//function default_board_number() {
+//    return 287190;
+//}
