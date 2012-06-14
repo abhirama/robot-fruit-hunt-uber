@@ -25,6 +25,7 @@ function FruitType(type) {
             }
         }
 
+        sortObjectsAsc(moves, 'distance');
         return moves;
     }
 
@@ -140,10 +141,36 @@ function Move(destinationNode, distance, direction) {
     this.direction = direction;
 }
 
+function getBestMove(fruitTypes, myNode, opponentNode) {
+    var oLen = fruitTypes.length;
+    var iLen;
+    var fruitType;
+    var move;
+    var moves;
+    var i, j;
+    for (i = 0; i < oLen; ++i) {
+        fruitType = fruitTypes[i];
+        moves = fruitType.moves;
+        iLen = moves.length;
 
+        for (j = 0; j < iLen; ++j) {
+            move = moves[j]; 
+
+            if (getMove(myNode, move.destinationNode).distance <= getMove(opponentNode, move.destinationNode).distance) {
+                return move;
+            }
+        }
+    }
+
+    return null;
+}
+
+var probableMove;
 function make_move() {
     var board = get_board();
 
+    var myNode = new Node(get_my_x(), get_my_y());
+    var opponentNode = new Node(get_opponent_x(), get_opponent_y());
 
     var types = getAllFruitTypes();
 
@@ -158,10 +185,6 @@ function make_move() {
         type = types[x];    
         fruitType = new FruitType(type);
 
-        if (!fruitType.moves.length) {
-            continue;
-        }
-
         if (!fruitType.shouldPickThisFruit()) {
             continue;
         }
@@ -171,42 +194,44 @@ function make_move() {
         fruitTypesDict[type] = fruitType;
     }
 
-    var currentType = board[get_my_x()][get_my_y()];
-
-    if (currentType && fruitTypesDict[currentType]) {
-        return TAKE;
-    }
-
     sortObjectsAsc(fruitTypes, 'totalCount');
 
     if (!fruitTypes.length) {
         return PASS;
     }
 
-    var moves = fruitTypes[0].moves;
+    var currentMove = getBestMove(fruitTypes, myNode, opponentNode);
 
-    sortObjectsAsc(moves, 'distance');
-
-    if (!moves.length) {
-        return PASS;
+    if (!currentMove) { //Opponent bot is closer to all the fruits.
+        currentMove = fruitTypes[0].moves[0]; //Just take the first fruit.
     }
 
-    return moves[0].direction;
+    //If there is no probable move or the fruit that we were planning to move to does not exist on the board now or is not beneficial to us.
+    if (!probableMove || !fruitTypesDict[board[probableMove.destinationNode.x][probableMove.destinationNode.y]]) {
+        probableMove = currentMove;
+    } else {
+        //Update probable move
+        probableMove = getMove(myNode, probableMove.destinationNode);
+    }
 
-    /*
-   var board = get_board();
+    var currentType = board[myNode.x][myNode.y];
 
-   // we found an item! take it!
+    if (currentType) { //We are standing on a fruit
+        if (fruitTypesDict[currentType]) { //This fruit is beneficial to us 
+            if (probableMove.destinationNode.equal(myNode)) { //This is the node we were planning to move to
+                probableMove = null;
+                return TAKE;
+            } else { //Check as to whether the opponent is at the same distance as us to the node we were planning to move to
+                if (probableMove.distance == getMove(opponentNode, probableMove.destinationNode).distance) { //Opponent is at the same distance as us, hence do not pick the current fruit and waste a move
+                    return probableMove.direction;    
+                } else { //We can afford to take this fruit
+                    return TAKE;
+                }
+            }
+        }
+    }
 
-   var rand = Math.random() * 4;
-
-   if (rand < 1) return NORTH;
-   if (rand < 2) return SOUTH;
-   if (rand < 3) return EAST;
-   if (rand < 4) return WEST;
-
-   return PASS;
-   */
+    return probableMove.direction;
 }
 
 // Optionally include this function if you'd like to always reset to a 
@@ -214,5 +239,5 @@ function make_move() {
 // bot(s) against known positions.
 //
 //function default_board_number() {
-//    return 287190;
+//    return 905127;
 //}
