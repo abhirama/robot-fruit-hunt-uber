@@ -1,6 +1,9 @@
 function new_game() {
 }
 
+//Global variables
+var probableMove;
+
 function FruitType(type) {
     this.type = type;
     this.totalCount = get_total_item_count(type);
@@ -26,6 +29,30 @@ function FruitType(type) {
     }
 
     this.moves = this.getFruitMoves();
+
+    //Pick this fruit only if we have the chance of gathering more than the opponent
+    this.shouldPickThisFruit = function() {
+        //We have more than enough to win
+        if (this.myCount > (this.totalCount / 2)) {
+            return false;
+        }
+
+        //We do not have a chance of maxing this fruit category, hence do not waste a move picking it
+        if (this.opponentCount > (this.totalCount / 2)) {
+            return false;
+        }
+
+        if (this.myCount == (this.totalCount / 2)) {
+            if (this.opponentCount != (this.totalCount / 2)) {
+                //We have a chance to max this category, hence pick this fruit
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 function sortObjectsAsc(ary, field) {
@@ -116,9 +143,7 @@ function Move(destinationNode, distance, direction) {
 
 function make_move() {
     var board = get_board();
-    if (board[get_my_x()][get_my_y()] > 0) {
-        return TAKE;
-    }
+
 
     var types = getAllFruitTypes();
 
@@ -126,6 +151,9 @@ function make_move() {
     var type;
     var fruitTypes = [];
     var fruitType;
+
+    var fruitTypesDict = {};
+
     for (var x = 0; x < len; ++x) {
         type = types[x];    
         fruitType = new FruitType(type);
@@ -134,7 +162,19 @@ function make_move() {
             continue;
         }
 
+        if (!fruitType.shouldPickThisFruit()) {
+            continue;
+        }
+
         fruitTypes.push(fruitType);
+
+        fruitTypesDict[type] = fruitType;
+    }
+
+    var currentType = board[get_my_x()][get_my_y()];
+
+    if (currentType && fruitTypesDict[currentType]) {
+        return TAKE;
     }
 
     sortObjectsAsc(fruitTypes, 'totalCount');
