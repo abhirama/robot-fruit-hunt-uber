@@ -6,6 +6,7 @@ function new_game() {
     probableMove = null;
 }
 
+
 function FruitType(type) {
     this.type = type;
     this.totalCount = get_total_item_count(type);
@@ -33,6 +34,13 @@ function FruitType(type) {
 
     this.moves = this.getFruitMoves();
 
+    this.minimumSweepMoves = 0;
+    
+    if (this.moves.length) {
+        this.minimumSweepMoves = getMinimumSweepMoves(this);
+    }
+        
+
     //Pick this fruit only if we have the chance of gathering more than the opponent
     this.shouldPickThisFruit = function() {
         //We have more than enough to win
@@ -55,6 +63,57 @@ function FruitType(type) {
         }
 
         return true;
+    }
+
+    function getMinimumSweepMoves(fruitType) {
+        var sortedMoves = fruitType.moves;
+        var nearestMove = sortedMoves[0];
+
+        var sortedMoves = copy(sortedMoves);
+
+        sortedMoves.splice(0, 1);
+
+        var perms = getAllPermutations(sortedMoves);
+
+        var len = perms.length;
+        var i = 0;
+        var elem;
+        var traversalDistances = [];
+        var minTraversalDistance = 0;
+
+        if (len > 1) {
+            for (i = 0; i < len; ++i) {
+                elem = perms[i];
+                elem.unshift(nearestMove);
+                traversalDistances.push(getTraversalDistance(elem));
+            }
+
+            traversalDistances.sort();
+            minTraversalDistance = traversalDistances[0];
+        }
+
+
+        var sweepMoves = nearestMove.distance + minTraversalDistance + fruitType.onBoardCount;
+
+        //console.log(sweepMoves);
+        return sweepMoves;
+
+        //Assumes moves has greater than one element
+        function getTraversalDistance(moves) {
+            var i = 0;
+            var len = moves.length - 1;
+            //console.log('Len:' + len);
+            var move;
+
+            var traversalDistance = 0;
+            for (i = 0; i < len; ++i) {
+                traversalDistance = traversalDistance + getMove(moves[i].destinationNode, moves[i + 1].destinationNode).distance;    
+            }
+
+            return traversalDistance;
+
+        }
+
     }
 }
 
@@ -197,6 +256,8 @@ function make_move() {
         fruitTypesDict[type] = fruitType;
     }
 
+    //console.dir(fruitTypes);
+
     sortObjectsAsc(fruitTypes, 'totalCount');
 
     if (!fruitTypes.length) {
@@ -300,17 +361,17 @@ function getAllPermutations(ary) {
         */
         return container;
     }
+}
 
-    function copy(ary) {
-        var copied = [];
-        var len = ary.length;
+function copy(ary) {
+    var copied = [];
+    var len = ary.length;
 
-        for (var i = 0; i < len; ++i) {
-            copied.push(ary[i]);
-        }
-        
-        return copied;
+    for (var i = 0; i < len; ++i) {
+        copied.push(ary[i]);
     }
+    
+    return copied;
 }
 
 
