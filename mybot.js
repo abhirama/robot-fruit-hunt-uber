@@ -1,8 +1,10 @@
-function new_game() {
-}
-
 //Global variables
 var probableMove;
+
+function new_game() {
+    //This is needed when we reset the game without refreshing the page.
+    probableMove = null;
+}
 
 function FruitType(type) {
     this.type = type;
@@ -165,7 +167,6 @@ function getBestMove(fruitTypes, myNode, opponentNode) {
     return null;
 }
 
-var probableMove;
 function make_move() {
     var board = get_board();
 
@@ -190,6 +191,8 @@ function make_move() {
         }
 
         fruitTypes.push(fruitType);
+
+        var perm = getAllPermutations(fruitType.moves);
 
         fruitTypesDict[type] = fruitType;
     }
@@ -234,10 +237,86 @@ function make_move() {
     return probableMove.direction;
 }
 
+function getAllPermutations(ary) {
+    var len = ary.length;
+    //console.log('Length:' + len);
+    var i = 0, j = 0, k = 0;
+    var elem, containerElem;
+    //console.dir(ary[0]);
+    var container = [[ary[0]]];
+    var copied;
+
+    /*
+    console.log('------------>------------');
+    for (i = 0; i < len; ++i) {
+        elem = ary[i];
+        console.dir(elem);
+    }
+    console.log('------------>------------');
+    */
+
+    for (i = 1; i < len; ++i) {
+        //console.log('I is:' + i);
+        elem = ary[i];
+        copied = copy(container);
+        container = [];
+        for (j = 0; j < copied.length; ++j) {
+            containerElem = copied[j];
+            ret = helper(elem, containerElem);
+
+            for (k = 0; k < ret.length; ++k) {
+                container.push(ret[k]);
+            }
+        }
+    }
+
+    return container;
+
+    function helper(elem, ary) {
+        /*
+        console.log('In helper start');
+        console.log('Elem is:');
+        console.dir(elem);
+        console.log('Ary is:');
+        console.dir(ary);
+        */
+        var len = ary.length;
+        var elem;
+
+        var container = [];
+        var copied;
+        for (var i = 0; i < len; ++i) {
+            copied = copy(ary);        
+            copied.splice(i, 0, elem);
+            container.push(copied);
+        }
+        copied = copy(ary);        
+        copied.push(elem);
+        container.push(copied);
+        /*
+        console.log('Result is:');
+        console.dir(container);
+        console.log('In helper end');
+        */
+        return container;
+    }
+
+    function copy(ary) {
+        var copied = [];
+        var len = ary.length;
+
+        for (var i = 0; i < len; ++i) {
+            copied.push(ary[i]);
+        }
+        
+        return copied;
+    }
+}
+
+
 // Optionally include this function if you'd like to always reset to a 
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
-//
-//function default_board_number() {
-//    return 905127;
-//}
+function default_board_number() {
+    return 227057;
+}
