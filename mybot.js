@@ -339,13 +339,13 @@ function make_move() {
     //console.dir(fruitTypes);
 
     var bestDirection;
-    console.log('Current type is:' + currentType);
+    //console.log('Current type is:' + currentType);
     if (currentType && fruitTypesDict[currentType]) {
         bestDirection = getBestDirection();
 
         if (bestDirection) {
-            console.log('Current type is preset');
-            debugger;
+            //console.log('Current type is preset');
+            //debugger;
             return bestDirection;
         }
     }
@@ -357,14 +357,14 @@ function make_move() {
     bestDirection = getBestDirection();
 
     if (bestDirection) {
-        console.log('Current type is not present');
-        debugger;
+        //console.log('Current type is not present');
+        //debugger;
         return bestDirection;
     }
 
     //Opponent is closer to all the fruits than us, just move towards the first fruit.
-    console.log('Opponent is closer than us');
-    debugger;
+    //console.log('Opponent is closer than us');
+    //debugger;
     return fruitTypes[0].moves[0].direction; 
 
     function getBestDirection() {
@@ -468,6 +468,6 @@ function copy(ary) {
 // Optionally include this function if you'd like to always reset to a 
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
-function default_board_number() {
-    return 490072;
-}
+//function default_board_number() {
+//    return 490072;
+//}
