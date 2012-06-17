@@ -65,6 +65,7 @@ function FruitType(type) {
         return true;
     }
 
+    /*
     function getMinimumSweepMoves(fruitType) {
         var sortedMoves = fruitType.moves;
         var nearestMove = sortedMoves[0];
@@ -81,6 +82,7 @@ function FruitType(type) {
         var traversalDistances = [];
         var minTraversalDistance = 0;
 
+        var map = {};
         if (len > 1) {
             for (i = 0; i < len; ++i) {
                 elem = perms[i];
@@ -114,6 +116,80 @@ function FruitType(type) {
 
         }
 
+    }*/
+
+    function getMinimumSweepMoves(fruitType) {
+        console.log('-------------------start----------------------------');
+        console.log("Length:" + fruitType.moves.length);
+        console.log('---Moves start---');
+        var sortedMoves = copy(fruitType.moves);
+        console.dir(sortedMoves);
+        console.log('---Moves end---');
+
+        var len = sortedMoves.length;
+        var elem;
+        var i = 0, j = 0;
+        var visited = [sortedMoves[0]];
+        var underCalculation;
+        delete sortedMoves[0];
+
+        var map = {};
+        var index, distance;
+        var seletedIndex, smallestDistance;
+        var sweepDistance = 0;
+
+        var noOfMovesToConsider = Math.round(fruitType.totalCount / 2);
+
+        if (fruitType.moves.length > 1) {
+            for (i = 0; i < len; ++i) {
+                underCalculation = visited[visited.length - 1];
+                console.log('This length is:' + visited.length);
+                console.dir(underCalculation);
+                map = {};
+                smallestDistance = Number.POSITIVE_INFINITY;
+
+                for (j = 0; j < len; ++j) {
+                    elem = sortedMoves[j];
+                    if (elem == undefined) {
+                        continue;
+                    }
+
+                    distance = getMove(underCalculation.destinationNode, elem.destinationNode).distance;
+
+                    map[j] = distance;
+                }
+
+                console.log('Map is:');
+                console.dir(map);
+
+                for (index in map) {
+                    distance = map[index];
+
+                    if (distance < smallestDistance) {
+                        smallestDistance = distance;
+                        seletedIndex = index;
+                    }
+                }
+
+                sweepDistance = sweepDistance + smallestDistance;
+                console.log('Pushing this, index is:' + seletedIndex);
+                console.dir(sortedMoves[seletedIndex]);
+                visited.push(sortedMoves[seletedIndex]);
+                delete sortedMoves[seletedIndex];
+
+                if (visited.length >= noOfMovesToConsider) {
+                    break;
+                }
+            }
+        }
+        
+        console.log('Visited length:' + visited.length);
+
+        var sweepMoves = visited[0].distance + sweepDistance + visited.length;
+        console.log('Moves:' + sweepMoves);
+        console.log('-------------------end----------------------------');
+
+        return sweepMoves;
     }
 }
 
@@ -251,14 +327,12 @@ function make_move() {
 
         fruitTypes.push(fruitType);
 
-        var perm = getAllPermutations(fruitType.moves);
-
         fruitTypesDict[type] = fruitType;
     }
 
     //console.dir(fruitTypes);
 
-    sortObjectsAsc(fruitTypes, 'totalCount');
+    sortObjectsAsc(fruitTypes, 'minimumSweepMoves');
 
     if (!fruitTypes.length) {
         return PASS;
@@ -378,6 +452,6 @@ function copy(ary) {
 // Optionally include this function if you'd like to always reset to a 
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
-function default_board_number() {
-    return 227057;
-}
+//function default_board_number() {
+//    return 757076;
+//}
