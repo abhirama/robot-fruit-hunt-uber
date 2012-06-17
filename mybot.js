@@ -1,9 +1,11 @@
 //Global variables
 var probableMove;
+var currentType;
 
 function new_game() {
     //This is needed when we reset the game without refreshing the page.
     probableMove = null;
+    currentType = null;
 }
 
 
@@ -330,46 +332,60 @@ function make_move() {
         fruitTypesDict[type] = fruitType;
     }
 
-    //console.dir(fruitTypes);
-
-    sortObjectsAsc(fruitTypes, 'minimumSweepMoves');
-
     if (!fruitTypes.length) {
         return PASS;
     }
 
-    var currentMove = getBestMove(fruitTypes, myNode, opponentNode);
+    //console.dir(fruitTypes);
 
-    if (!currentMove) { //Opponent bot is closer to all the fruits.
-        currentMove = fruitTypes[0].moves[0]; //Just take the first fruit.
-    }
+    var bestDirection;
+    console.log('Current type is:' + currentType);
+    if (currentType && fruitTypesDict[currentType]) {
+        bestDirection = getBestDirection();
 
-    //If there is no probable move or the fruit that we were planning to move to does not exist on the board now or is not beneficial to us.
-    if (!probableMove || !fruitTypesDict[board[probableMove.destinationNode.x][probableMove.destinationNode.y]]) {
-        probableMove = currentMove;
-    } else {
-        //Update probable move
-        probableMove = getMove(myNode, probableMove.destinationNode);
-    }
-
-    var currentType = board[myNode.x][myNode.y];
-
-    if (currentType) { //We are standing on a fruit
-        if (fruitTypesDict[currentType]) { //This fruit is beneficial to us 
-            if (probableMove.destinationNode.equal(myNode)) { //This is the node we were planning to move to
-                probableMove = null;
-                return TAKE;
-            } /*else { //Check as to whether the opponent is at the same distance as us to the node we were planning to move to
-                if (probableMove.distance == getMove(opponentNode, probableMove.destinationNode).distance) { //Opponent is at the same distance as us, hence do not pick the current fruit and waste a move
-                    return probableMove.direction;    
-                } else { //We can afford to take this fruit
-                    return TAKE;
-                }
-            }*/
+        if (bestDirection) {
+            console.log('Current type is preset');
+            debugger;
+            return bestDirection;
         }
     }
 
-    return probableMove.direction;
+    sortObjectsAsc(fruitTypes, 'minimumSweepMoves');
+
+    currentType = fruitTypes[0].type;
+
+    bestDirection = getBestDirection();
+
+    if (bestDirection) {
+        console.log('Current type is not present');
+        debugger;
+        return bestDirection;
+    }
+
+    //Opponent is closer to all the fruits than us, just move towards the first fruit.
+    console.log('Opponent is closer than us');
+    debugger;
+    return fruitTypes[0].moves[0].direction; 
+
+    function getBestDirection() {
+        if (board[myNode.x][myNode.y] == currentType) {
+            return TAKE;
+        }
+        var moves = fruitTypesDict[currentType].moves;
+        var move;
+        var i = 0;
+        var len = moves.length;
+
+        for (i = 0; i < len; ++i) {
+            move = moves[i];    
+
+            if (move.distance <= getMove(opponentNode, move.destinationNode).distance) {
+                return move.direction;
+            }
+        }
+
+        return null;
+    }
 }
 
 function getAllPermutations(ary) {
@@ -452,6 +468,6 @@ function copy(ary) {
 // Optionally include this function if you'd like to always reset to a 
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
-//function default_board_number() {
-//    return 757076;
-//}
+function default_board_number() {
+    return 490072;
+}
