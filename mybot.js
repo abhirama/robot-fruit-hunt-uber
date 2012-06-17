@@ -1,10 +1,10 @@
 //Global variables
-var probableMove;
+var probableMoves = [];
 var currentType;
 
 function new_game() {
     //This is needed when we reset the game without refreshing the page.
-    probableMove = null;
+    probableMoves = [];
     currentType = null;
 }
 
@@ -15,6 +15,17 @@ function FruitType(type) {
     this.myCount = get_my_item_count(type);
     this.opponentCount = get_opponent_item_count(type);
     this.onBoardCount = this.totalCount - this.myCount - this.opponentCount;
+
+
+    this.getToPickCount = function() {
+        if (this.onBoardCount >= Math.round(this.totalCount / 2)) {
+            return Math.round(this.totalCount / 2);
+        }
+
+        return this.onBoardCount;
+    }
+
+    this.toPickCount = this.getToPickCount(); 
 
     this.getFruitMoves = function() {
         var board = get_board();
@@ -36,10 +47,10 @@ function FruitType(type) {
 
     this.moves = this.getFruitMoves();
 
-    this.minimumSweepMoves = 0;
+    this.minimumSweepDistance = 0;
     
     if (this.moves.length) {
-        this.minimumSweepMoves = getMinimumSweepMoves(this);
+        this.minimumSweepDistance = getMinimumSweepDistance(this);
     }
         
 
@@ -67,60 +78,69 @@ function FruitType(type) {
         return true;
     }
 
-    /*
-    function getMinimumSweepMoves(fruitType) {
-        var sortedMoves = fruitType.moves;
-        var nearestMove = sortedMoves[0];
-
-        var sortedMoves = copy(sortedMoves);
-
-        sortedMoves.splice(0, 1);
+    this.getMinimumSweepMoves = function(myPosition) {
+        var sortedMoves = this.moves;
 
         var perms = getAllPermutations(sortedMoves);
 
+        //console.log('Perms:');
+        //console.dir(perms);
+
         var len = perms.length;
-        var i = 0;
-        var elem;
         var traversalDistances = [];
-        var minTraversalDistance = 0;
 
-        var map = {};
-        if (len > 1) {
-            for (i = 0; i < len; ++i) {
-                elem = perms[i];
-                elem.unshift(nearestMove);
-                traversalDistances.push(getTraversalDistance(elem));
-            }
-
-            traversalDistances.sort();
-            minTraversalDistance = traversalDistances[0];
+        for (i = 0; i < len; ++i) {
+            perms[i] = perms[i].slice(0, this.toPickCount);
         }
 
+        if (len > 1) {
+            for (i = 0; i < len; ++i) {
+                //console.log('spliced - start');
+                //console.dir(perms[i].slice(0, this.toPickCount));
+                //console.log('spliced - end');
+                traversalDistances.push(getTraversalDistance(perms[i]));
+            }
 
-        var sweepMoves = nearestMove.distance + minTraversalDistance + fruitType.onBoardCount;
+            //console.log('Traversal distances');
+            //console.dir(traversalDistances);
 
-        //console.log(sweepMoves);
-        return sweepMoves;
+            len = traversalDistances.length;
+            var least = Number.POSITIVE_INFINITY;
+            var index = 0;
+            for (i = 0; i < len; ++i) {
+                if (traversalDistances[i] < least) {
+                    least = traversalDistances[i];
+                    index = i;
+                }
+            }
+
+            //console.log('Sorted traversal distances');
+            //console.dir(traversalDistances);
+
+            //console.log('Least distance:' + traversalDistances[index]);
+            return perms[index];
+        }
+
+        //console.log('Returninggggggggggg');
+        return getMove(myPosition, perms[0][0].destinationNode);
 
         //Assumes moves has greater than one element
         function getTraversalDistance(moves) {
-            var i = 0;
             var len = moves.length - 1;
             //console.log('Len:' + len);
-            var move;
 
             var traversalDistance = 0;
-            for (i = 0; i < len; ++i) {
+            for (var i = 0; i < len; ++i) {
                 traversalDistance = traversalDistance + getMove(moves[i].destinationNode, moves[i + 1].destinationNode).distance;    
             }
 
-            return traversalDistance;
+            return getMove(myPosition, moves[0].destinationNode).distance + traversalDistance;
 
         }
 
-    }*/
+    }
 
-    function getMinimumSweepMoves(fruitType) {
+    function getMinimumSweepDistance(fruitType) {
         //console.log('-------------------start----------------------------');
         //console.log("Length:" + fruitType.moves.length);
         //console.log('---Moves start---');
@@ -304,6 +324,12 @@ function getBestMove(fruitTypes, myNode, opponentNode) {
     return null;
 }
 
+function addToProbableMoves(moves) {
+    for (var i = 0; i < moves.length; ++i) {
+        probableMoves.push(moves[i]);
+    }
+}
+
 function make_move() {
     var board = get_board();
 
@@ -350,9 +376,11 @@ function make_move() {
         }
     }
 
-    sortObjectsAsc(fruitTypes, 'minimumSweepMoves');
+    sortObjectsAsc(fruitTypes, 'minimumSweepDistance');
 
     currentType = fruitTypes[0].type;
+
+    //console.dir(fruitTypes[0].getMinimumSweepMoves(myNode));
 
     bestDirection = getBestDirection();
 
@@ -371,7 +399,7 @@ function make_move() {
         if (board[myNode.x][myNode.y] == currentType) {
             return TAKE;
         }
-        var moves = fruitTypesDict[currentType].moves;
+        var moves = fruitTypes[0].getMinimumSweepMoves(myNode);
         var move;
         var i = 0;
         var len = moves.length;
@@ -469,5 +497,5 @@ function copy(ary) {
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
 //function default_board_number() {
-//    return 490072;
+//    return 834062;
 //}
