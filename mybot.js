@@ -119,12 +119,12 @@ function FruitType(type) {
     }*/
 
     function getMinimumSweepMoves(fruitType) {
-        console.log('-------------------start----------------------------');
-        console.log("Length:" + fruitType.moves.length);
-        console.log('---Moves start---');
+        //console.log('-------------------start----------------------------');
+        //console.log("Length:" + fruitType.moves.length);
+        //console.log('---Moves start---');
         var sortedMoves = copy(fruitType.moves);
-        console.dir(sortedMoves);
-        console.log('---Moves end---');
+        //console.dir(sortedMoves);
+        //console.log('---Moves end---');
 
         var len = sortedMoves.length;
         var elem;
@@ -143,8 +143,8 @@ function FruitType(type) {
         if (fruitType.moves.length > 1) {
             for (i = 0; i < len; ++i) {
                 underCalculation = visited[visited.length - 1];
-                console.log('This length is:' + visited.length);
-                console.dir(underCalculation);
+                //console.log('This length is:' + visited.length);
+                //console.dir(underCalculation);
                 map = {};
                 smallestDistance = Number.POSITIVE_INFINITY;
 
@@ -159,8 +159,8 @@ function FruitType(type) {
                     map[j] = distance;
                 }
 
-                console.log('Map is:');
-                console.dir(map);
+                //console.log('Map is:');
+                //console.dir(map);
 
                 for (index in map) {
                     distance = map[index];
@@ -172,8 +172,8 @@ function FruitType(type) {
                 }
 
                 sweepDistance = sweepDistance + smallestDistance;
-                console.log('Pushing this, index is:' + seletedIndex);
-                console.dir(sortedMoves[seletedIndex]);
+                //console.log('Pushing this, index is:' + seletedIndex);
+                //console.dir(sortedMoves[seletedIndex]);
                 visited.push(sortedMoves[seletedIndex]);
                 delete sortedMoves[seletedIndex];
 
@@ -183,11 +183,11 @@ function FruitType(type) {
             }
         }
         
-        console.log('Visited length:' + visited.length);
+        //console.log('Visited length:' + visited.length);
 
         var sweepMoves = visited[0].distance + sweepDistance + visited.length;
-        console.log('Moves:' + sweepMoves);
-        console.log('-------------------end----------------------------');
+        //console.log('Moves:' + sweepMoves);
+        //console.log('-------------------end----------------------------');
 
         return sweepMoves;
     }
@@ -359,13 +359,13 @@ function make_move() {
             if (probableMove.destinationNode.equal(myNode)) { //This is the node we were planning to move to
                 probableMove = null;
                 return TAKE;
-            } else { //Check as to whether the opponent is at the same distance as us to the node we were planning to move to
+            } /*else { //Check as to whether the opponent is at the same distance as us to the node we were planning to move to
                 if (probableMove.distance == getMove(opponentNode, probableMove.destinationNode).distance) { //Opponent is at the same distance as us, hence do not pick the current fruit and waste a move
                     return probableMove.direction;    
                 } else { //We can afford to take this fruit
                     return TAKE;
                 }
-            }
+            }*/
         }
     }
 
