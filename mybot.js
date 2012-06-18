@@ -34,10 +34,10 @@ function FruitType(type) {
 
     this.moves = this.getFruitMoves();
 
-    this.minimumSweepMoves = 0;
+    this.minimumSweepDistance = 0;
     
     if (this.moves.length) {
-        this.minimumSweepMoves = getMinimumSweepMoves(this);
+        this.minimumSweepDistance = getMinimumSweepDistance(this);
     }
         
 
@@ -66,7 +66,7 @@ function FruitType(type) {
     }
 
     /*
-    function getMinimumSweepMoves(fruitType) {
+    function getMinimumSweepDistance(fruitType) {
         var sortedMoves = fruitType.moves;
         var nearestMove = sortedMoves[0];
 
@@ -118,7 +118,7 @@ function FruitType(type) {
 
     }*/
 
-    function getMinimumSweepMoves(fruitType) {
+    function getMinimumSweepDistance(fruitType) {
         /*
         console.log('-------------------start----------------------------');
         console.log("Length:" + fruitType.moves.length);
@@ -189,11 +189,11 @@ function FruitType(type) {
         
         //console.log('Visited length:' + visited.length);
 
-        var sweepMoves = visited[0].distance + sweepDistance + visited.length;
+        var minimumSweepDistance = visited[0].distance + sweepDistance + visited.length;
         //console.log('Moves:' + sweepMoves);
         //console.log('-------------------end----------------------------');
 
-        return sweepMoves;
+        return minimumSweepDistance;
     }
 }
 
@@ -336,7 +336,7 @@ function make_move() {
 
     //console.dir(fruitTypes);
 
-    sortObjectsAsc(fruitTypes, 'minimumSweepMoves');
+    sortObjectsAsc(fruitTypes, 'minimumSweepDistance');
 
     if (!fruitTypes.length) {
         return PASS;
