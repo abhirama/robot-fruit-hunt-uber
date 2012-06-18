@@ -142,8 +142,6 @@ function FruitType(type) {
         var seletedIndex, smallestDistance;
         var sweepDistance = 0;
 
-        var noOfMovesToConsider = Math.round(fruitType.totalCount / 2);
-
         var noOfMovesToConsider = Math.round(fruitType.totalCount / 2) - fruitType.myCount;
 
         if ((fruitType.moves.length > 1) && (visited.length < noOfMovesToConsider)) {
