@@ -37,7 +37,7 @@ function FruitType(type) {
     this.minimumSweepDistance = 0;
     
     if (this.moves.length) {
-        this.minimumSweepDistance = getMinimumSweepDistance(this.moves, this.totalCount, this.myCount);
+        this.minimumSweepDistance = getMinimumSweepDistanceAndMoves(this.moves, this.totalCount, this.myCount)[0];
     }
         
 
@@ -66,7 +66,7 @@ function FruitType(type) {
     }
 
     /*
-    function getMinimumSweepDistance(fruitType) {
+    function getMinimumSweepDistanceAndMoves(fruitType) {
         var sortedMoves = fruitType.moves;
         var nearestMove = sortedMoves[0];
 
@@ -118,82 +118,118 @@ function FruitType(type) {
 
     }*/
 
-    function getMinimumSweepDistance(moves, totalFruitCount, myCount) {
-        /*
-        console.log('-------------------start----------------------------');
-        console.log("Length:" + fruitType.moves.length);
-        console.log('---Moves start---');
-        */
-        var sortedMoves = copy(moves);
-        /*
-        console.dir(sortedMoves);
-        console.log('---Moves end---');
-        */
+    function arraySwapElements(ary, index0, index1) {
+        var tmp = ary[index0];
+        ary[index0] = ary[index1];
+        ary[index1] = tmp;
 
-        var len = sortedMoves.length;
+        return ary;
+    }
+
+    function getMinimumSweepDistanceAndMoves(moves, totalFruitCount, myCount) {
+        var len = moves.length;
         var elem;
-        var i = 0, j = 0;
-        var visited = [sortedMoves[0]];
-        var underCalculation;
-        delete sortedMoves[0];
-
+        var copied;
         var map = {};
-        var index, distance;
-        var seletedIndex, smallestDistance;
-        var sweepDistance = 0;
+        var sweepDistanceAndMoves;
+        for (var i = 0; i < len; ++i) {
+            copied = copy(moves);
+            copied = arraySwapElements(copied, 0, i);
+            sweepDistanceAndMoves = getSweepDistanceAndMoves(copied);
 
-        var noOfMovesToConsider = Math.round(totalFruitCount / 2) - myCount;
+            map[sweepDistanceAndMoves[0]] = sweepDistanceAndMoves[1];
+        }
 
-        if ((sortedMoves.length > 1) && (visited.length < noOfMovesToConsider)) {
-            for (i = 0; i < len; ++i) {
-                underCalculation = visited[visited.length - 1];
-                //console.log('This length is:' + visited.length);
-                //console.dir(underCalculation);
-                map = {};
-                smallestDistance = Number.POSITIVE_INFINITY;
-
-                for (j = 0; j < len; ++j) {
-                    elem = sortedMoves[j];
-                    if (elem == undefined) {
-                        continue;
-                    }
-
-                    distance = getMove(underCalculation.destinationNode, elem.destinationNode).distance;
-
-                    map[j] = distance;
-                }
-
-                //console.log('Map is:');
-                //console.dir(map);
-
-                for (index in map) {
-                    distance = map[index];
-
-                    if (distance < smallestDistance) {
-                        smallestDistance = distance;
-                        seletedIndex = index;
-                    }
-                }
-
-                sweepDistance = sweepDistance + smallestDistance;
-                //console.log('Pushing this, index is:' + seletedIndex);
-                //console.dir(sortedMoves[seletedIndex]);
-                visited.push(sortedMoves[seletedIndex]);
-                delete sortedMoves[seletedIndex];
-
-                if (visited.length >= noOfMovesToConsider) {
-                    break;
-                }
+        len = sweepDistanceAndMoves.length;
+        var least = Number.POSITIVE_INFINITY;
+        for (var distance in map) {
+            if (distance < least) {
+                least = distance;
             }
         }
+
+        console.dir(map);
+
+        return [least, map[least]];
+
         
-        //console.log('Visited length:' + visited.length);
+        function getSweepDistanceAndMoves(moves) {
+            /*
+            console.log('-------------------start----------------------------');
+            console.log("Length:" + fruitType.moves.length);
+            console.log('---Moves start---');
+            */
+            var sortedMoves = copy(moves);
+            /*
+            console.dir(sortedMoves);
+            console.log('---Moves end---');
+            */
 
-        var minimumSweepDistance = visited[0].distance + sweepDistance + visited.length;
-        //console.log('Moves:' + sweepMoves);
-        //console.log('-------------------end----------------------------');
+            var len = sortedMoves.length;
+            var elem;
+            var i = 0, j = 0;
+            var visited = [sortedMoves[0]];
+            var underCalculation;
+            delete sortedMoves[0];
 
-        return minimumSweepDistance;
+            var map = {};
+            var index, distance;
+            var seletedIndex, smallestDistance;
+            var sweepDistance = 0;
+
+            var noOfMovesToConsider = Math.round(totalFruitCount / 2) - myCount;
+
+            if ((sortedMoves.length > 1) && (visited.length < noOfMovesToConsider)) {
+                for (i = 0; i < len; ++i) {
+                    underCalculation = visited[visited.length - 1];
+                    //console.log('This length is:' + visited.length);
+                    //console.dir(underCalculation);
+                    map = {};
+                    smallestDistance = Number.POSITIVE_INFINITY;
+
+                    for (j = 0; j < len; ++j) {
+                        elem = sortedMoves[j];
+                        if (elem == undefined) {
+                            continue;
+                        }
+
+                        distance = getMove(underCalculation.destinationNode, elem.destinationNode).distance;
+
+                        map[j] = distance;
+                    }
+
+                    //console.log('Map is:');
+                    //console.dir(map);
+
+                    for (index in map) {
+                        distance = map[index];
+
+                        if (distance < smallestDistance) {
+                            smallestDistance = distance;
+                            seletedIndex = index;
+                        }
+                    }
+
+                    sweepDistance = sweepDistance + smallestDistance;
+                    //console.log('Pushing this, index is:' + seletedIndex);
+                    //console.dir(sortedMoves[seletedIndex]);
+                    visited.push(sortedMoves[seletedIndex]);
+                    delete sortedMoves[seletedIndex];
+
+                    if (visited.length >= noOfMovesToConsider) {
+                        break;
+                    }
+                }
+            }
+            
+            //console.log('Visited length:' + visited.length);
+
+            var minimumSweepDistance = visited[0].distance + sweepDistance + visited.length;
+            //console.log('Moves:' + sweepMoves);
+            //console.log('-------------------end----------------------------');
+
+            return [minimumSweepDistance, visited];
+        }
     }
 }
 
