@@ -162,10 +162,6 @@ function FruitType(type) {
 
         var noOfMovesToConsider = Math.round(fruitType.totalCount / 2) - fruitType.myCount;
 
-        if (fruitType.type == 2) {
-            console.log('No of moves to consider:' + noOfMovesToConsider);
-        }
-
         if ((fruitType.moves.length > 1) && (visited.length < noOfMovesToConsider)) {
             for (i = 0; i < len; ++i) {
                 underCalculation = visited[visited.length - 1];
@@ -375,7 +371,7 @@ function make_move() {
 
         if (bestDirection) {
             //console.log('Current type is preset');
-            debugger;
+            //debugger;
             return bestDirection;
         }
     }
@@ -390,13 +386,13 @@ function make_move() {
 
     if (bestDirection) {
         //console.log('Current type is not present');
-        debugger;
+        //debugger;
         return bestDirection;
     }
 
     //Opponent is closer to all the fruits than us, just move towards the first fruit.
-    console.log('Opponent is closer than us');
-    debugger;
+    //console.log('Opponent is closer than us');
+    //debugger;
     return fruitTypes[0].moves[0].direction; 
 
     function getBestDirection() {
@@ -404,7 +400,7 @@ function make_move() {
             return TAKE;
         }
         var moves = fruitTypes[0].getMinimumSweepMoves(myNode);
-        //console.log(moves);
+        //console.dir(moves);
         var move;
         var i = 0;
         var len = moves.length;
@@ -502,5 +498,5 @@ function copy(ary) {
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
 function default_board_number() {
-    return 834062;
+    return 718611;
 }
