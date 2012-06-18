@@ -37,7 +37,7 @@ function FruitType(type) {
     this.minimumSweepDistance = 0;
     
     if (this.moves.length) {
-        this.minimumSweepDistance = getMinimumSweepDistance(this);
+        this.minimumSweepDistance = getMinimumSweepDistance(this.moves, this.totalCount, this.myCount);
     }
         
 
@@ -118,13 +118,13 @@ function FruitType(type) {
 
     }*/
 
-    function getMinimumSweepDistance(fruitType) {
+    function getMinimumSweepDistance(moves, totalFruitCount, myCount) {
         /*
         console.log('-------------------start----------------------------');
         console.log("Length:" + fruitType.moves.length);
         console.log('---Moves start---');
         */
-        var sortedMoves = copy(fruitType.moves);
+        var sortedMoves = copy(moves);
         /*
         console.dir(sortedMoves);
         console.log('---Moves end---');
@@ -142,9 +142,9 @@ function FruitType(type) {
         var seletedIndex, smallestDistance;
         var sweepDistance = 0;
 
-        var noOfMovesToConsider = Math.round(fruitType.totalCount / 2) - fruitType.myCount;
+        var noOfMovesToConsider = Math.round(totalFruitCount / 2) - myCount;
 
-        if ((fruitType.moves.length > 1) && (visited.length < noOfMovesToConsider)) {
+        if ((sortedMoves.length > 1) && (visited.length < noOfMovesToConsider)) {
             for (i = 0; i < len; ++i) {
                 underCalculation = visited[visited.length - 1];
                 //console.log('This length is:' + visited.length);
