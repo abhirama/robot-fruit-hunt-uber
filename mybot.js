@@ -119,12 +119,16 @@ function FruitType(type) {
     }*/
 
     function getMinimumSweepMoves(fruitType) {
+        /*
         console.log('-------------------start----------------------------');
         console.log("Length:" + fruitType.moves.length);
         console.log('---Moves start---');
+        */
         var sortedMoves = copy(fruitType.moves);
+        /*
         console.dir(sortedMoves);
         console.log('---Moves end---');
+        */
 
         var len = sortedMoves.length;
         var elem;
@@ -145,8 +149,8 @@ function FruitType(type) {
         if ((fruitType.moves.length > 1) && (visited.length < noOfMovesToConsider)) {
             for (i = 0; i < len; ++i) {
                 underCalculation = visited[visited.length - 1];
-                console.log('This length is:' + visited.length);
-                console.dir(underCalculation);
+                //console.log('This length is:' + visited.length);
+                //console.dir(underCalculation);
                 map = {};
                 smallestDistance = Number.POSITIVE_INFINITY;
 
@@ -161,8 +165,8 @@ function FruitType(type) {
                     map[j] = distance;
                 }
 
-                console.log('Map is:');
-                console.dir(map);
+                //console.log('Map is:');
+                //console.dir(map);
 
                 for (index in map) {
                     distance = map[index];
@@ -174,8 +178,8 @@ function FruitType(type) {
                 }
 
                 sweepDistance = sweepDistance + smallestDistance;
-                console.log('Pushing this, index is:' + seletedIndex);
-                console.dir(sortedMoves[seletedIndex]);
+                //console.log('Pushing this, index is:' + seletedIndex);
+                //console.dir(sortedMoves[seletedIndex]);
                 visited.push(sortedMoves[seletedIndex]);
                 delete sortedMoves[seletedIndex];
 
@@ -185,11 +189,11 @@ function FruitType(type) {
             }
         }
         
-        console.log('Visited length:' + visited.length);
+        //console.log('Visited length:' + visited.length);
 
         var sweepMoves = visited[0].distance + sweepDistance + visited.length;
-        console.log('Moves:' + sweepMoves);
-        console.log('-------------------end----------------------------');
+        //console.log('Moves:' + sweepMoves);
+        //console.log('-------------------end----------------------------');
 
         return sweepMoves;
     }
