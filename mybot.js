@@ -35,9 +35,16 @@ function FruitType(type) {
     this.moves = this.getFruitMoves();
 
     this.minimumSweepDistance = 0;
+    this.minimumSweepMoves = null;
     
     if (this.moves.length) {
-        this.minimumSweepDistance = getMinimumSweepDistanceAndMoves(this.moves, this.totalCount, this.myCount)[0];
+        var minimumSweepDistanceAndMoves = getMinimumSweepDistanceAndMoves(this.moves, this.totalCount, this.myCount);
+        //console.log('Minimum sweep distance and moves:' + this.totalCount);
+        //console.dir(minimumSweepDistanceAndMoves);
+        this.minimumSweepDistance = minimumSweepDistanceAndMoves[0];
+        this.minimumSweepMoves = minimumSweepDistanceAndMoves[1];
+
+        //console.dir(this.minimumSweepMoves);
     }
         
 
@@ -143,12 +150,16 @@ function FruitType(type) {
         len = sweepDistanceAndMoves.length;
         var least = Number.POSITIVE_INFINITY;
         for (var distance in map) {
+            distance = parseInt(distance);
             if (distance < least) {
                 least = distance;
             }
         }
 
+        /*
+        console.log('Distance is:' + least);
         console.dir(map);
+        */
 
         return [least, map[least]];
 
@@ -327,6 +338,23 @@ function getBestMove(fruitTypes, myNode, opponentNode) {
     var i, j;
     for (i = 0; i < oLen; ++i) {
         fruitType = fruitTypes[i];
+
+        sweepMoves = fruitType.minimumSweepMoves;
+        iLen = sweepMoves.length;
+
+        for (j = 0; j < iLen; ++j) {
+            move = sweepMoves[j];
+
+            if (getMove(myNode, move.destinationNode).distance <= getMove(opponentNode, move.destinationNode).distance) {
+                return move;
+            }
+        }
+
+        if (iLen > 1) { //More than one fruit is present, hence move towards them even if the opponent is closer
+            return sweepMoves[0];
+        }
+
+
         moves = fruitType.moves;
         iLen = moves.length;
 
@@ -493,5 +521,5 @@ function copy(ary) {
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
 //function default_board_number() {
-//    return 757076;
+//    return 973060;
 //}
