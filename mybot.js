@@ -140,7 +140,9 @@ function FruitType(type) {
 
         var noOfMovesToConsider = Math.round(fruitType.totalCount / 2);
 
-        if (fruitType.moves.length > 1) {
+        var noOfMovesToConsider = Math.round(fruitType.totalCount / 2) - fruitType.myCount;
+
+        if ((fruitType.moves.length > 1) && (visited.length < noOfMovesToConsider)) {
             for (i = 0; i < len; ++i) {
                 underCalculation = visited[visited.length - 1];
                 console.log('This length is:' + visited.length);
