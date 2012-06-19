@@ -329,6 +329,28 @@ function Move(destinationNode, distance, direction) {
     this.direction = direction;
 }
 
+function getCloserToOpponentMoves(fruitTypes, myNode, opponentNode) {
+    var fruitTypeLen = fruitTypes.length, movesLen;
+
+    var fruitType, move;
+    var closerToOpponent = [];
+    var i,j;
+    for (i = 0; i < fruitTypeLen; ++i) {
+        fruitType = fruitTypes[i];        
+
+        movesLen = fruitType.moves.length;
+        for (j = 0; j < movesLen; ++j) {
+            move = fruitType.moves[j];
+
+            if (getMove(myNode, move.destinationNode).distance >= getMove(opponentNode, move.destinationNode).distance) {
+                closerToOpponent.push(move);
+            }
+        }
+    }
+
+    return closerToOpponent;
+}
+
 function getBestMove(fruitTypes, myNode, opponentNode) {
     var oLen = fruitTypes.length;
     var iLen;
@@ -350,7 +372,7 @@ function getBestMove(fruitTypes, myNode, opponentNode) {
             }
         }
 
-        if (iLen > 1) { //More than one fruit is present, hence move towards them even if the opponent is closer
+        if (getCloserToOpponentMoves(fruitTypes, myNode, opponentNode).length) { //More than one fruit is present, hence move towards them even if the opponent is closer
             return sweepMoves[0];
         }
 
@@ -521,5 +543,6 @@ function copy(ary) {
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
 //function default_board_number() {
-//    return 973060;
+//    //return 17532;
+//    return 528874;
 //}
