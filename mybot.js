@@ -42,7 +42,7 @@ function FruitType(type) {
         //console.log('Minimum sweep distance and moves:' + this.totalCount);
         //console.dir(minimumSweepDistanceAndMoves);
         this.minimumSweepDistance = minimumSweepDistanceAndMoves[0];
-        this.minimumSweepMoves = minimumSweepDistanceAndMoves[1];
+        this.minimumSweepMoves = sortObjectsAsc(minimumSweepDistanceAndMoves[1], 'distance');
 
         //console.dir(this.minimumSweepMoves);
     }
@@ -542,7 +542,7 @@ function copy(ary) {
 // Optionally include this function if you'd like to always reset to a 
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
-//function default_board_number() {
-//    //return 17532;
+function default_board_number() {
+    return 17532;
 //    return 528874;
-//}
+}
