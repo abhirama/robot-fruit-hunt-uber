@@ -1,9 +1,12 @@
 //Global variables
 var probableMove;
+var maxCountFruit;
 
 function new_game() {
     //This is needed when we reset the game without refreshing the page.
     probableMove = null;
+    maxCountFruit = null;
+
 }
 
 
@@ -424,6 +427,13 @@ function make_move() {
 
     sortObjectsAsc(fruitTypes, 'minimumSweepDistance');
 
+    //populate the max count fruit. This should happen only once, the first time this is called.
+    if (!maxCountFruit) {
+        sortObjectsAsc(copy(fruitTypes), 'totalCount');
+        maxCountFruit = fruitTypes[fruitTypes.length - 1].type;
+    }
+
+
     if (!fruitTypes.length) {
         return PASS;
     }
@@ -453,7 +463,9 @@ function make_move() {
                 if (probableMove.distance == getMove(opponentNode, probableMove.destinationNode).distance) { //Opponent is at the same distance as us, hence do not pick the current fruit and waste a move
                     return probableMove.direction;    
                 } else { //We can afford to take this fruit
-                    return TAKE;
+                    if (currentType != maxCountFruit ) { //Pick this only if it is not of max count type
+                        return TAKE;
+                    }
                 }
             }
         }
@@ -542,7 +554,7 @@ function copy(ary) {
 // Optionally include this function if you'd like to always reset to a 
 // certain board number/layout. This is useful for repeatedly testing your
 // bot(s) against known positions.
-function default_board_number() {
-    return 17532;
+//function default_board_number() {
+//    return 17532;
 //    return 528874;
-}
+//}
