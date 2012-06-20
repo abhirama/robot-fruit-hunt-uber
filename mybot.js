@@ -441,7 +441,11 @@ function make_move() {
     var currentMove = getBestMove(fruitTypes, myNode, opponentNode);
 
     if (!currentMove) { //Opponent bot is closer to all the fruits.
-        currentMove = fruitTypes[0].moves[0]; //Just take the first fruit.
+        if (fruitTypes.length) {
+            currentMove = fruitTypes[0].moves[0]; //Just take the first fruit.
+        } else { //We are at the end of the game
+            return PASS;
+        }
     }
 
     //If there is no probable move or the fruit that we were planning to move to does not exist on the board now or is not beneficial to us.
